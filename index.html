@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLAN Network Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background: #080d1c;
+    color: white;
+}
+
+.dashboard {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px;
+    background: #171e32;
+    border: 1px solid #303952;
+    border-radius: 18px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.subtitle {
+    color: #9da9c2;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.status {
+    color: #65e6a6;
+    font-size: 12px;
+}
+
+.network {
+    background: #10182b;
+    border: 1px solid #303952;
+    border-radius: 15px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.network h2 {
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.network p {
+    color: #9da9c2;
+    font-size: 12px;
+}
+
+.topology {
+    position: relative;
+    width: 760px;
+    height: 480px;
+    margin: 15px auto;
+}
+
+.connections {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    z-index: 1;
+}
+
+.line {
+    stroke: #65e6a6;
+    stroke-width: 3;
+    fill: none;
+}
+
+.device {
+    position: absolute;
+    z-index: 2;
+    width: 125px;
+    padding: 13px 5px;
+    text-align: center;
+    background: #252e47;
+    border: 2px solid #586782;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px #0005;
+}
+
+.device .emoji {
+    font-size: 30px;
+}
+
+.device strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+.device small {
+    display: block;
+    margin-top: 5px;
+    color: #aebbd1;
+    font-size: 10px;
+}
+
+.router {
+    top: 5px;
+    left: 317px;
+    border-color: #c084fc;
+}
+
+.switch {
+    top: 155px;
+    left: 317px;
+    border-color: #65e6a6;
+}
+
+.pc1 {
+    top: 350px;
+    left: 20px;
+    border-color: #65c9ff;
+}
+
+.pc2 {
+    top: 350px;
+    left: 220px;
+    border-color: #65c9ff;
+}
+
+.pc3 {
+    top: 350px;
+    left: 420px;
+    border-color: #f5b86a;
+}
+
+.pc4 {
+    top: 350px;
+    left: 620px;
+    border-color: #d59bff;
+}
+
+.vlan-label {
+    position: absolute;
+    top: 315px;
+    z-index: 3;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.vlan10 {
+    left: 35px;
+    color: #65c9ff;
+}
+
+.vlan20 {
+    left: 435px;
+    color: #f5b86a;
+}
+
+.vlan30 {
+    left: 635px;
+    color: #d59bff;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #202a42;
+    padding: 17px;
+    border: 1px solid #35415c;
+    border-radius: 12px;
+}
+
+.card h3 {
+    font-size: 14px;
+    margin-top: 0;
+}
+
+.card p {
+    font-size: 12px;
+    color: #aebbd1;
+    line-height: 1.8;
+}
+
+.blue { color: #65c9ff; }
+.orange { color: #f5b86a; }
+.purple { color: #d59bff; }
+
+button {
+    border: none;
+    background: linear-gradient(120deg, #a65cbd, #716bd1);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#result {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #65e6a6;
+}
+
+footer {
+    text-align: center;
+    color: #75819b;
+    font-size: 11px;
+    margin-top: 25px;
+}
+
+@media(max-width: 650px) {
+    body { padding: 10px; }
+    .dashboard { padding: 13px; }
+    header { align-items: flex-start; }
+    .info-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<header>
+    <div>
+        <h1>🌐 VLAN Network Dashboard</h1>
+        <div class="subtitle">Virtual Local Area Network Management</div>
+    </div>
+    <div class="status">● Network Online</div>
+</header>
+
+<section class="network">
+
+<h2>Network Topology</h2>
+<p>Router connected to Switch and four PCs</p>
+
+<div class="topology">
+
+    <!-- Connecting Lines -->
+    <svg class="connections" viewBox="0 0 760 480">
+
+        <!-- Router to Switch -->
+        <line class="line" x1="380" y1="82"
+              x2="380" y2="155"/>
+
+        <!-- Switch to PCs -->
+        <line class="line" x1="380" y1="232"
+              x2="82" y2="350"/>
+
+        <line class="line" x1="380" y1="232"
+              x2="282" y2="350"/>
+
+        <line class="line" x1="380" y1="232"
+              x2="482" y2="350"/>
+
+        <line class="line" x1="380" y1="232"
+              x2="682" y2="350"/>
+
+    </svg>
+
+    <!-- Router -->
+    <div class="device router">
+        <div class="emoji">📡</div>
+        <strong>Router R1</strong>
+        <small>192.168.1.1</small>
+        <small>Gateway</small>
+    </div>
+
+    <!-- Switch -->
+    <div class="device switch">
+        <div class="emoji">🔀</div>
+        <strong>Switch S1</strong>
+        <small>Managed Switch</small>
+        <small>VLAN Enabled</small>
+    </div>
+
+    <!-- VLAN Labels -->
+    <div class="vlan-label vlan10">VLAN 10</div>
+    <div class="vlan-label vlan20">VLAN 20</div>
+    <div class="vlan-label vlan30">VLAN 30</div>
+
+    <!-- Computers -->
+    <div class="device pc1">
+        <div class="emoji">💻</div>
+        <strong>PC 1</strong>
+        <small>192.168.10.2</small>
+        <small>HR Department</small>
+    </div>
+
+    <div class="device pc2">
+        <div class="emoji">💻</div>
+        <strong>PC 2</strong>
+        <small>192.168.10.3</small>
+        <small>HR Department</small>
+    </div>
+
+    <div class="device pc3">
+        <div class="emoji">💻</div>
+        <strong>PC 3</strong>
+        <small>192.168.20.2</small>
+        <small>IT Department</small>
+    </div>
+
+    <div class="device pc4">
+        <div class="emoji">💻</div>
+        <strong>PC 4</strong>
+        <small>192.168.30.2</small>
+        <small>Students</small>
+    </div>
+
+</div>
+</section>
+
+<!-- VLAN Information -->
+<section class="info-grid">
+
+    <div class="card">
+        <h3 class="blue">VLAN 10 - HR</h3>
+        <p>
+            VLAN ID: 10<br>
+            Network: 192.168.10.0/24<br>
+            PC 1: 192.168.10.2<br>
+            PC 2: 192.168.10.3
+        </p>
+    </div>
+
+    <div class="card">
+        <h3 class="orange">VLAN 20 - IT</h3>
+        <p>
+            VLAN ID: 20<br>
+            Network: 192.168.20.0/24<br>
+            PC 3: 192.168.20.2
+        </p>
+    </div>
+
+    <div class="card">
+        <h3 class="purple">VLAN 30 - Students</h3>
+        <p>
+            VLAN ID: 30<br>
+            Network: 192.168.30.0/24<br>
+            PC 4: 192.168.30.2
+        </p>
+    </div>
+
+</section>
+
+<div class="controls">
+    <button onclick="checkNetwork()">Test Network Connection</button>
+    <div id="result">Waiting for network test...</div>
+</div>
+
+<footer>
+    VLAN Network Project | Networking Laboratory
+</footer>
+
+</div>
+
+<script>
+function checkNetwork() {
+    document.getElementById("result").innerHTML =
+        "✓ Router R1 connected<br>" +
+        "✓ Switch S1 connected<br>" +
+        "✓ PC1, PC2, PC3 and PC4 displayed<br>" +
+        "✓ VLAN topology is ready!";
+}
+</script>
+
+</body>
+</html>
